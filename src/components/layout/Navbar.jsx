@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import api from '../../services/api'
 
 const navLinkClass = ({ isActive }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
-    isActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    isActive
+      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-800 dark:text-indigo-100'
+      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
   }`
 
 export default function Navbar() {
@@ -36,6 +39,8 @@ export default function Navbar() {
     navigate('/login')
   }
 
+  const { theme, toggleTheme } = useTheme()
+
   const initials = user?.name
     ?.split(' ')
     .map((part) => part[0])
@@ -44,7 +49,7 @@ export default function Navbar() {
     .toUpperCase()
 
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-6">
           <Link to="/dashboard" className="text-lg font-bold text-indigo-700">
@@ -72,9 +77,18 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+          </button>
+
           <Link
             to="/notifications"
-            className="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+            className="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
             aria-label="Notifications"
           >
             <span className="text-lg" aria-hidden>
@@ -106,17 +120,17 @@ export default function Navbar() {
                   aria-label="Close menu"
                   onClick={() => setMenuOpen(false)}
                 />
-                <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
+                <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
                   <Link
                     to="/profile/me"
-                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
                     onClick={() => setMenuOpen(false)}
                   >
                     My profile
                   </Link>
                   <Link
                     to="/bookmarks"
-                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
                     onClick={() => setMenuOpen(false)}
                   >
                     Bookmarks
@@ -127,7 +141,7 @@ export default function Navbar() {
                       setMenuOpen(false)
                       handleLogout()
                     }}
-                    className="block w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50"
+                    className="block w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-900"
                   >
                     Log out
                   </button>

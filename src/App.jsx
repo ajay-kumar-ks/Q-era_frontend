@@ -26,13 +26,14 @@ import ExamManagementPage from './pages/admin/ExamManagementPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminApprovalPage from './pages/admin/AdminApprovalPage'
 import { useAuth } from './context/AuthContext'
+import Loader from './components/common/Loader'
 
 function HomeRedirect() {
   const { isAuthenticated, loading } = useAuth()
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">
-        Loading…
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600 dark:bg-slate-950 dark:text-slate-200">
+        <Loader />
       </div>
     )
   }
