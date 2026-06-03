@@ -45,8 +45,6 @@ export default function useQuestions(initialLimit = 12) {
         ),
       )
 
-      if (!shouldLike) return
-
       try {
         const { data } = await api.post(`/questions/${questionId}/like`)
         setItems((prev) => prev.map((q) => (q.id === questionId ? { ...q, ...data } : q)))

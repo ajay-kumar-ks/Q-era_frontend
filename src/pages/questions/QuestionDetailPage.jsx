@@ -30,13 +30,22 @@ export default function QuestionDetailPage() {
   }, [id])
 
   const onLike = async () => {
-    if (!question || question.liked) return
-    setQuestion((prev) => ({ ...prev, liked: true, likes_count: prev.likes_count + 1 }))
+    if (!question) return
+    const nextLiked = !question.liked
+    setQuestion((prev) => ({
+      ...prev,
+      liked: nextLiked,
+      likes_count: Math.max(0, prev.likes_count + (nextLiked ? 1 : -1)),
+    }))
     try {
       const { data } = await api.post(`/questions/${id}/like`)
       setQuestion((prev) => ({ ...prev, ...data }))
     } catch {
-      setQuestion((prev) => ({ ...prev, liked: false, likes_count: Math.max(0, prev.likes_count - 1) }))
+      setQuestion((prev) => ({
+        ...prev,
+        liked: !nextLiked,
+        likes_count: Math.max(0, prev.likes_count + (nextLiked ? -1 : 1)),
+      }))
     }
   }
 

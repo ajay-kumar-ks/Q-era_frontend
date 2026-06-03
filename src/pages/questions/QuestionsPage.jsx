@@ -26,10 +26,8 @@ export default function QuestionsPage() {
 
   const toggleLike = async (id) => {
     const question = items.find((q) => q.id === id)
-    if (!question || question.liked) {
-      return
-    }
-    await optimisticLikeToggle(id, true)
+    if (!question) return
+    await optimisticLikeToggle(id, !question.liked)
   }
 
   const toggleBookmark = async (id) => {
