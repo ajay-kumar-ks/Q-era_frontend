@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import Loader from "../../components/common/Loader";
 
 export default function BookmarksPage() {
   const [bookmarks, setBookmarks] = useState([]);
@@ -31,32 +32,34 @@ export default function BookmarksPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">My Bookmarks</h1>
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="mb-4 text-3xl font-bold text-slate-900 dark:text-slate-100">My Bookmarks</h1>
       {loading ? (
-        <div className="text-center py-16">Loading bookmarks...</div>
+        <div className="flex justify-center py-16">
+          <Loader />
+        </div>
       ) : error ? (
-        <div className="text-red-500">{error}</div>
+        <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-200">{error}</div>
       ) : bookmarks.length === 0 ? (
-        <div className="text-gray-600">You have not saved any bookmarks yet.</div>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">You have not saved any bookmarks yet.</div>
       ) : (
         <div className="space-y-4">
           {bookmarks.map((bookmark) => (
-            <div key={bookmark.id} className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
+            <div key={bookmark.id} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <div className="text-lg font-semibold">{bookmark.title}</div>
-                  <div className="mt-2 text-sm text-gray-600">{bookmark.description}</div>
-                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-500">
-                    <span className="rounded-full bg-gray-100 px-2 py-1">{bookmark.type}</span>
-                    <span className="rounded-full bg-gray-100 px-2 py-1">Difficulty: {bookmark.difficulty}</span>
-                    <span className="rounded-full bg-gray-100 px-2 py-1">Likes: {bookmark.likes_count}</span>
+                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{bookmark.title}</div>
+                  <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">{bookmark.description}</div>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800">{bookmark.type}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800">Difficulty: {bookmark.difficulty}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800">Likes: {bookmark.likes_count}</span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeBookmark(bookmark.id)}
-                  className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700"
+                  className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-600"
                 >
                   Remove
                 </button>
