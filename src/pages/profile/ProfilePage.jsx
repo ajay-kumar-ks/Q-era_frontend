@@ -26,27 +26,27 @@ export default function ProfilePage() {
   }
 
   if (error) {
-    return <div className="p-8 text-red-500">{error}</div>;
+    return <div className="p-8 text-red-500 dark:text-rose-300">{error}</div>;
   }
 
   if (!profile) {
-    return <div className="p-8 text-gray-600">No profile information available.</div>;
+    return <div className="p-8 text-slate-500 dark:text-slate-400">No profile information available.</div>;
   }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="mb-8 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-8 flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{profile.name}</h1>
-          <p className="text-sm text-gray-600">{profile.email}</p>
-          <p className="mt-3 text-gray-700">{profile.bio || "No bio added yet."}</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{profile.name}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
+          <p className="mt-3 text-slate-700 dark:text-slate-300">{profile.bio || "No bio added yet."}</p>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-3">Stats</h2>
-          <div className="space-y-3 text-sm text-slate-700">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h2 className="text-lg font-semibold mb-3 text-slate-900 dark:text-slate-100">Stats</h2>
+          <div className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
             <div>Global Rank: {profile.stats.global_rank ?? "N/A"}</div>
             <div>Exams Attended: {profile.stats.exams_attended}</div>
             <div>Exams Created: {profile.stats.exams_created}</div>
@@ -55,19 +55,19 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2">
-          <h2 className="text-lg font-semibold mb-3">Recent Activity</h2>
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 md:col-span-2">
+          <h2 className="text-lg font-semibold mb-3 text-slate-900 dark:text-slate-100">Recent Activity</h2>
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-slate-900">Recent Questions</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Questions</h3>
               {profile.recent_questions.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">No recent questions.</p>
               ) : (
                 <div className="mt-3 grid gap-3">
                   {profile.recent_questions.map((question) => (
-                    <div key={question.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white">
+                    <div key={question.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
                       <div className="flex items-center justify-between gap-3">
-                        <div className="font-medium text-slate-900">{question.title}</div>
+                        <div className="font-medium text-slate-900 dark:text-slate-100">{question.title}</div>
                         {question.status && question.status !== "approved" ? (
                           <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
                             {question.status}
@@ -82,15 +82,15 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-slate-900">Recent Exams</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Exams</h3>
               {profile.recent_exams.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">No recent exams.</p>
               ) : (
                 <div className="mt-3 grid gap-3">
                   {profile.recent_exams.map((exam) => (
-                    <div key={exam.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white">
+                    <div key={exam.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
                       <div className="flex items-center justify-between gap-3">
-                        <div className="font-medium text-slate-900">{exam.title}</div>
+                        <div className="font-medium text-slate-900 dark:text-slate-100">{exam.title}</div>
                         {exam.status && exam.status !== "approved" ? (
                           <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
                             {exam.status}

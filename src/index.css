@@ -12,3 +12,45 @@ body {
   background: #f8fafc;
   color: #0f172a;
 }
+
+.dark body {
+  background: #020617;
+  color: #f8fafc;
+}
+
+.dark .bg-white {
+  background-color: #0f172a;
+}
+
+.dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+
+.dark .bg-slate-100 {
+  background-color: #111827;
+}
+
+.dark .bg-indigo-100 {
+  background-color: #312e81;
+}
+
+.dark .border-slate-200,
+.dark .border-gray-200 {
+  border-color: #334155;
+}
+
+.dark .text-slate-900,
+.dark .text-gray-900 {
+  color: #f8fafc;
+}
+
+.dark .text-slate-700,
+.dark .text-gray-700 {
+  color: #cbd5e1;
+}
+
+.dark .text-gray-600,
+.dark .text-slate-500,
+.dark .text-gray-500 {
+  color: #94a3b8;
+}

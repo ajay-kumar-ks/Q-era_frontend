@@ -297,13 +297,13 @@ export default function MyProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      <div className="mb-6 flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Avatar profile={profile} />
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{profile?.name}</h1>
-            <p className="text-sm text-slate-600">{profile?.email}</p>
-            <p className="mt-2 max-w-2xl text-sm text-slate-700">{profile?.bio || "No bio added yet."}</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{profile?.name}</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{profile?.email}</p>
+            <p className="mt-2 max-w-2xl text-sm text-slate-700 dark:text-slate-300">{profile?.bio || "No bio added yet."}</p>
           </div>
         </div>
         <button
@@ -319,7 +319,7 @@ export default function MyProfilePage() {
       {error && <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
       {editing && (
-        <form className="mb-8 space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" onSubmit={saveChanges}>
+        <form className="mb-8 space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900" onSubmit={saveChanges}>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-slate-700" htmlFor="profile-name">Name</label>
