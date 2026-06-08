@@ -109,7 +109,17 @@ export default function QuestionsPage() {
             <Link to={`/questions/${q.id}`} className="text-lg font-semibold text-slate-900 hover:text-indigo-700 dark:text-slate-100">
               {q.title}
             </Link>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">By {q.author_name}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              By{' '}
+              {q.user_id ? (
+                <Link to={`/profile/${q.user_id}`} className="font-semibold text-indigo-700 hover:underline dark:text-indigo-300">
+                  {q.author_name}
+                </Link>
+              ) : (
+                <span>{q.author_name}</span>
+              )}
+            </p>
+
             <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">{q.description || 'No description.'}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium capitalize text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">

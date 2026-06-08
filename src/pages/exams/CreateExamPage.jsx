@@ -16,6 +16,8 @@ export default function CreateExamPage() {
     randomize_order: false,
     randomize_options: false,
     secure_mode: false,
+    scheduled_at: '',
+    deadline: '',
   })
   const [search, setSearch] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -102,6 +104,8 @@ export default function CreateExamPage() {
         randomize_order: form.randomize_order,
         randomize_options: form.randomize_options,
         secure_mode: form.secure_mode,
+        scheduled_at: form.scheduled_at || null,
+        deadline: form.deadline || null,
         questions: selected.map((item, index) => ({
           question_id: item.question_id,
           marks: item.marks,
@@ -204,6 +208,29 @@ export default function CreateExamPage() {
               />
               Secure exam mode
             </label>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="text-sm font-semibold text-slate-900">Schedule exam (optional)</label>
+              <input
+                type="datetime-local"
+                value={form.scheduled_at}
+                onChange={(e) => handleChange('scheduled_at', e.target.value)}
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              />
+              <p className="mt-1 text-xs text-slate-500">When this exam becomes available</p>
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-slate-900">Deadline (optional)</label>
+              <input
+                type="datetime-local"
+                value={form.deadline}
+                onChange={(e) => handleChange('deadline', e.target.value)}
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              />
+              <p className="mt-1 text-xs text-slate-500">When students must complete it</p>
+            </div>
           </div>
 
           <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">

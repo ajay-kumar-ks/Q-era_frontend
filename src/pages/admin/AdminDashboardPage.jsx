@@ -69,8 +69,15 @@ export default function AdminDashboardPage() {
           <Link to="/admin/approvals" className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
             Approvals
           </Link>
+          <Link
+            to="/admin/import-export"
+            className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            Import / Export
+          </Link>
         </div>
       </div>
+
 
       {loading ? (
         <div className="text-center py-16 text-slate-500">Loading dashboard...</div>

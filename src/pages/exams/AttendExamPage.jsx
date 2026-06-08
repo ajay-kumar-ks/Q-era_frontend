@@ -34,6 +34,7 @@ export default function AttendExamPage() {
   const [questions, setQuestions] = useState([])
   const [attempt, setAttempt] = useState(null)
   const [answers, setAnswers] = useState({})
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [remainingSeconds, setRemainingSeconds] = useState(0)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -99,19 +100,66 @@ export default function AttendExamPage() {
         }
 
         if (attemptResponse?.data) {
+          const serverRaw = attemptResponse.data
           const serverAttempt = {
-            attemptId: attemptResponse.data.id,
+            attemptId: serverRaw.id,
             examId: Number(id),
-            attemptNumber: attemptResponse.data.attempt_number,
-            startedAt: parseServerTime(attemptResponse.data.started_at),
+            attemptNumber: serverRaw.attempt_number,
+            startedAt: parseServerTime(serverRaw.started_at),
             durationMinutes: examData.duration_minutes,
-            answers: attemptResponse.data.answers || {},
-            questions: attemptResponse.data.questions || [],
+            answers: serverRaw.answers || {},
+            questions: serverRaw.questions || [],
+            last_saved_at: serverRaw.last_saved_at || null,
           }
-          currentAttempt = serverAttempt
-          setAttempt(serverAttempt)
-          setAnswers(serverAttempt.answers)
-          saveStoredAttempt(serverAttempt)
+
+          // If we had a local stored attempt, prefer the one with the newest last_saved_at
+          const localAttempt = getStoredAttempt()
+          const localSaved = localAttempt?.last_saved_at ? parseServerTime(localAttempt.last_saved_at) : 0
+          const serverSaved = serverAttempt.last_saved_at ? parseServerTime(serverAttempt.last_saved_at) : 0
+
+          if (localAttempt && localAttempt.examId === Number(id) && localSaved > serverSaved) {
+            // local is newer — try to persist it to server, otherwise keep local
+            try {
+              const res = await api.patch(`/exams/attempt/${localAttempt.attemptId}`, {
+                time_taken_seconds: Math.max(0, Math.floor((Date.now() - localAttempt.startedAt) / 1000)),
+                answers: Object.fromEntries(Object.entries(localAttempt.answers || {}).map(([q, a]) => [String(q), a?.toString() || ''])),
+              })
+              if (res?.data) {
+                const merged = {
+                  attemptId: res.data.id,
+                  examId: Number(id),
+                  attemptNumber: res.data.attempt_number,
+                  startedAt: parseServerTime(res.data.started_at),
+                  durationMinutes: examData.duration_minutes,
+                  answers: res.data.answers || {},
+                  questions: res.data.questions || [],
+                  last_saved_at: res.data.last_saved_at || null,
+                }
+                currentAttempt = merged
+                setAttempt(merged)
+                setAnswers(merged.answers)
+                saveStoredAttempt(merged)
+              } else {
+                // fallback to local
+                currentAttempt = localAttempt
+                setAttempt(localAttempt)
+                setAnswers(localAttempt.answers || {})
+                saveStoredAttempt(localAttempt)
+              }
+            } catch (e) {
+              // server save failed; keep local attempt so user doesn't lose work
+              currentAttempt = localAttempt
+              setAttempt(localAttempt)
+              setAnswers(localAttempt.answers || {})
+              saveStoredAttempt(localAttempt)
+            }
+          } else {
+            // server is newer or no local attempt — use server
+            currentAttempt = serverAttempt
+            setAttempt(serverAttempt)
+            setAnswers(serverAttempt.answers)
+            saveStoredAttempt(serverAttempt)
+          }
         }
 
         if (!currentAttempt || currentAttempt.examId !== Number(id)) {
@@ -152,6 +200,9 @@ export default function AttendExamPage() {
             marks: questionMarks[question.id] ?? question.marks ?? 1,
           })),
         )
+
+        // reset question index on new attempt
+        setCurrentQuestionIndex(0)
 
         const elapsed = Math.floor((Date.now() - currentAttempt.startedAt) / 1000)
         const remaining = Math.max(0, examData.duration_minutes * 60 - elapsed)
@@ -200,18 +251,52 @@ export default function AttendExamPage() {
     setAnswers((prev) => ({ ...prev, [questionId]: value }))
   }
 
+  // Secure mode: disable right-click and refresh shortcuts to reduce casual cheating
+  useEffect(() => {
+    if (!exam || !exam.secure_mode) return
+    const onContext = (e) => e.preventDefault()
+    const onKey = (e) => {
+      // block F5 and Ctrl+R
+      if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R'))) {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener('contextmenu', onContext)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('contextmenu', onContext)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [exam])
+
   useEffect(() => {
     if (!attempt || !exam) return
     const timer = setTimeout(async () => {
       try {
         const timeTaken = exam.duration_minutes * 60 - remainingSeconds
-        await api.patch(`/exams/attempt/${attempt.attemptId}`, {
+        const res = await api.patch(`/exams/attempt/${attempt.attemptId}`, {
           time_taken_seconds: Math.max(0, timeTaken),
           answers: Object.fromEntries(
             Object.entries(answers).map(([question, answer]) => [String(question), answer?.toString() || '']),
           ),
         })
-        saveStoredAttempt({ ...attempt, answers })
+        if (res?.data) {
+          const data = res.data
+          const updated = {
+            attemptId: data.id,
+            examId: Number(id),
+            attemptNumber: data.attempt_number,
+            startedAt: parseServerTime(data.started_at),
+            durationMinutes: exam.duration_minutes,
+            answers: data.answers || {},
+            questions: data.questions || [],
+            last_saved_at: data.last_saved_at || null,
+          }
+          setAttempt(updated)
+          saveStoredAttempt(updated)
+        } else {
+          saveStoredAttempt({ ...attempt, answers })
+        }
       } catch {
         // ignore save failures for now
       }
@@ -282,7 +367,85 @@ export default function AttendExamPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <section className="space-y-6">
-          {perQuestion.map((question, index) => (
+          {exam.secure_mode ? (
+            // show one question at a time in secure mode and prevent backtracking
+            (() => {
+              const question = perQuestion[currentQuestionIndex]
+              if (!question) return null
+              return (
+                <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-lg font-semibold text-slate-900">Q{currentQuestionIndex + 1}. {question.title}</p>
+                      <p className="mt-2 text-sm text-slate-500">{question.type} · {question.difficulty}</p>
+                    </div>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">{exam.questions[currentQuestionIndex]?.marks ?? 1} pts</span>
+                  </div>
+
+                  {question.image_url ? (
+                    <img src={question.image_url} alt="" className="mt-4 max-h-80 w-full rounded-xl border border-slate-200 object-contain" />
+                  ) : null}
+                  {(question.media_url || question.attachment_url) ? (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {question.media_url ? (
+                        <a href={question.media_url} target="_blank" rel="noreferrer" className="rounded-lg bg-indigo-50 px-3 py-1.5 text-sm font-semibold text-indigo-700">Open media</a>
+                      ) : null}
+                      {question.attachment_url ? (
+                        <a href={question.attachment_url} target="_blank" rel="noreferrer" className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700">Open attachment</a>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {question.options?.length ? (
+                    <div className="mt-4 space-y-3">
+                      {question.options.map((option) => (
+                        <label key={option.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                          <input
+                            type={question.type === 'mcq' ? 'radio' : 'radio'}
+                            name={`question-${question.id}`}
+                            value={option.option_text}
+                            checked={answers[question.id] === option.option_text}
+                            onChange={(e) => setAnswer(question.id, e.target.value)}
+                            className="h-4 w-4 text-indigo-600"
+                          />
+                          <span className="text-sm text-slate-700">
+                            {option.option_order}. {option.option_text}
+                            {option.image_url ? (
+                              <img src={option.image_url} alt="" className="mt-2 max-h-36 rounded-lg border border-slate-100 object-contain" />
+                            ) : null}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={answers[question.id] || ''}
+                      onChange={(e) => setAnswer(question.id, e.target.value)}
+                      placeholder="Type your answer here"
+                      rows={4}
+                      className="mt-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    />
+                  )}
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div />
+                    <div className="flex gap-2">
+                      {/* Prev disabled in secure mode to disable backtracking */}
+                      {false ? (
+                        <button className="rounded-xl bg-slate-200 px-4 py-2 text-sm">Previous</button>
+                      ) : null}
+                      {currentQuestionIndex < perQuestion.length - 1 ? (
+                        <button onClick={() => setCurrentQuestionIndex((i) => i + 1)} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">Next</button>
+                      ) : (
+                        <button onClick={handleManualSubmit} className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white">Submit Exam</button>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              )
+            })()
+          ) : (
+            perQuestion.map((question, index) => (
             <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -341,7 +504,8 @@ export default function AttendExamPage() {
                 />
               )}
             </article>
-          ))}
+          ))
+          )}
         </section>
 
         <aside className="space-y-5">

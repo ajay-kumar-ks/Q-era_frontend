@@ -71,16 +71,19 @@ export default function PublicProfilePage() {
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 md:col-span-2">
-          <h2 className="text-lg font-semibold mb-3 text-slate-900 dark:text-slate-100">Recent Activity</h2>
-          <div className="space-y-4">
+          <h2 className="text-lg font-semibold mb-3 text-slate-900 dark:text-slate-100">Created Content</h2>
+          <div className="space-y-6">
             <div>
-              <h3 className="font-semibold text-slate-900">Recent Questions</h3>
+              <h3 className="font-semibold text-slate-900">Questions Created</h3>
               {profile.recent_questions.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">No recent questions.</p>
+                <p className="mt-3 text-sm text-slate-500">No questions created yet.</p>
               ) : (
                 <div className="mt-3 grid gap-3">
                   {profile.recent_questions.map((question) => (
-                    <div key={question.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
+                    <div
+                      key={question.id}
+                      className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    >
                       <div className="font-medium text-slate-900 dark:text-slate-100">{question.title}</div>
                       <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">Difficulty: {question.difficulty}</div>
                     </div>
@@ -90,15 +93,28 @@ export default function PublicProfilePage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Exams</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100">Exams Created</h3>
               {profile.recent_exams.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">No recent exams.</p>
+                <p className="mt-3 text-sm text-slate-500">No exams created yet.</p>
               ) : (
                 <div className="mt-3 grid gap-3">
                   {profile.recent_exams.map((exam) => (
-                    <div key={exam.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
+                    <div
+                      key={exam.id}
+                      className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                    >
                       <div className="font-medium text-slate-900 dark:text-slate-100">{exam.title}</div>
-                      <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">Marks: {exam.total_marks} • Duration: {exam.duration_minutes} mins</div>
+                      <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Marks: {exam.total_marks} • Duration: {exam.duration_minutes} mins
+                      </div>
+                      {exam.id ? (
+                        <a
+                          href={`/exams/${exam.id}/attend`}
+                          className="mt-3 inline-block rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                        >
+                          Take this exam
+                        </a>
+                      ) : null}
                     </div>
                   ))}
                 </div>
@@ -106,6 +122,7 @@ export default function PublicProfilePage() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -52,6 +52,7 @@ export default function Navbar() {
     { to: '/dashboard', label: 'Home', icon: '🏠' },
     { to: '/questions', label: 'Questions', icon: '❓' },
     { to: '/exams', label: 'Exams', icon: '📝' },
+    { to: '/calendar', label: 'Calendar', icon: '📅' },
     { to: '/profile/me', label: 'Profile', icon: '👤' },
   ]
 
@@ -72,6 +73,12 @@ export default function Navbar() {
             <NavLink to="/exams" className={navLinkClass}>
               Exams
             </NavLink>
+            <NavLink to="/calendar" className={navLinkClass}>
+              Calendar
+            </NavLink>
+            <NavLink to="/reviews" className={navLinkClass}>
+              Reviews
+            </NavLink>
             <NavLink to="/leaderboard" className={navLinkClass}>
               Leaderboard
             </NavLink>
@@ -80,6 +87,7 @@ export default function Navbar() {
                 Admin
               </NavLink>
             )}
+
           </nav>
         </div>
 
@@ -134,6 +142,13 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                   >
                     My profile
+                  </Link>
+                  <Link
+                    to="/reviews"
+                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Reviews
                   </Link>
                   <Link
                     to="/bookmarks"
