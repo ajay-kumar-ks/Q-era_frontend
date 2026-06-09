@@ -11,7 +11,7 @@ const navLinkClass = ({ isActive }) =>
       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'
   }`
 
-export default function Navbar() {
+export default function Navbar({ hideMobileHeader = false }) {
   const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -84,7 +84,8 @@ export default function Navbar() {
 
   return (
     <header className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      {/* Top header bar — hidden on mobile when hideMobileHeader is true */}
+      <div className={`mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 ${hideMobileHeader ? 'hidden lg:flex' : ''}`}>
         <div className="flex items-center gap-6">
           <Link to="/dashboard" className="text-lg font-bold text-indigo-700">
             QERA
