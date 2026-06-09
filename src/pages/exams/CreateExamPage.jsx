@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -124,55 +124,55 @@ export default function CreateExamPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Create a new exam</h1>
-          <p className="mt-2 text-slate-600">Build an exam from your question bank and publish it instantly.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Create a new exam</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">Build an exam from your question bank and publish it instantly.</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
-        <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <div>
-            <label className="text-sm font-semibold text-slate-900">Exam title</label>
+            <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Exam title</label>
             <input
               value={form.title}
               onChange={(e) => handleChange('title', e.target.value)}
               placeholder="Example: Algebra fundamentals"
-              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-slate-900">Description</label>
+            <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="Describe what this exam covers"
               rows={4}
-              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
             />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-sm font-semibold text-slate-900">Duration (minutes)</label>
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Duration (minutes)</label>
               <input
                 type="number"
                 min="5"
                 value={form.duration_minutes}
                 onChange={(e) => handleChange('duration_minutes', Number(e.target.value))}
-                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
             <div>
-              <label className="text-sm font-semibold text-slate-900">Total marks</label>
-              <div className="mt-2 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Total marks</label>
+              <div className="mt-2 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
                 {totalMarks} points (auto-calculated)
               </div>
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm">
+            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.is_public}
@@ -181,7 +181,7 @@ export default function CreateExamPage() {
               />
               Public exam
             </label>
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm">
+            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.randomize_order}
@@ -190,7 +190,7 @@ export default function CreateExamPage() {
               />
               Randomize question order
             </label>
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm">
+            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.randomize_options}
@@ -199,7 +199,7 @@ export default function CreateExamPage() {
               />
               Randomize question options
             </label>
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm">
+            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={form.secure_mode}
@@ -212,50 +212,50 @@ export default function CreateExamPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-sm font-semibold text-slate-900">Schedule exam (optional)</label>
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Schedule exam (optional)</label>
               <input
                 type="datetime-local"
                 value={form.scheduled_at}
                 onChange={(e) => handleChange('scheduled_at', e.target.value)}
-                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
-              <p className="mt-1 text-xs text-slate-500">When this exam becomes available</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">When this exam becomes available</p>
             </div>
             <div>
-              <label className="text-sm font-semibold text-slate-900">Deadline (optional)</label>
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Deadline (optional)</label>
               <input
                 type="datetime-local"
                 value={form.deadline}
                 onChange={(e) => handleChange('deadline', e.target.value)}
-                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
-              <p className="mt-1 text-xs text-slate-500">When students must complete it</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">When students must complete it</p>
             </div>
           </div>
 
-          <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+          <div className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Selected questions</h2>
-              <span className="text-sm text-slate-500">{selected.length} items</span>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Selected questions</h2>
+              <span className="text-sm text-slate-500 dark:text-slate-400">{selected.length} items</span>
             </div>
             {selected.length === 0 ? (
-              <p className="text-sm text-slate-600">Select questions from the bank on the right to include them in this exam.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Select questions from the bank on the right to include them in this exam.</p>
             ) : (
               <div className="space-y-3">
                 {selected.map((item) => (
-                  <div key={item.question_id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+                  <div key={item.question_id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-slate-900">{item.title}</p>
-                      <p className="text-sm text-slate-500">Question ID {item.question_id}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{item.title}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">Question ID {item.question_id}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <label className="text-sm text-slate-600">Marks</label>
+                      <label className="text-sm text-slate-600 dark:text-slate-400">Marks</label>
                       <input
                         type="number"
                         min="1"
                         value={item.marks}
                         onChange={(e) => updateMarks(item.question_id, e.target.value)}
-                        className="w-20 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                        className="w-20 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                       />
                       <button
                         type="button"
@@ -281,16 +281,16 @@ export default function CreateExamPage() {
             >
               Create exam
             </button>
-            <p className="text-sm text-slate-500">The exam will be created with the selected questions and marks.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">The exam will be created with the selected questions and marks.</p>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Question bank</h2>
-                <p className="text-sm text-slate-500">Search and pick questions to add to your exam.</p>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Question bank</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Search and pick questions to add to your exam.</p>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">{questions.length} total</span>
             </div>
@@ -298,16 +298,16 @@ export default function CreateExamPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Filter questions"
-              className="mb-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              className="mb-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             />
-            {loading && <p className="text-sm text-slate-500">Loading questions...</p>}
-            {!loading && !filteredQuestions.length && <p className="text-sm text-slate-500">No questions match your search.</p>}
+            {loading && <p className="text-sm text-slate-500 dark:text-slate-400">Loading questions...</p>}
+            {!loading && !filteredQuestions.length && <p className="text-sm text-slate-500 dark:text-slate-400">No questions match your search.</p>}
             <div className="space-y-3">
               {filteredQuestions.map((question) => (
-                <div key={question.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div key={question.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="font-medium text-slate-900">{question.title}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{question.title}</p>
                       <p className="mt-1 text-sm text-slate-500">{question.type} · {question.difficulty}</p>
                     </div>
                     <button
@@ -324,8 +324,8 @@ export default function CreateExamPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Checklist</h2>
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Checklist</h2>
             <ul className="mt-4 space-y-3 text-sm text-slate-600">
               <li>Choose at least one question.</li>
               <li>Set realistic mark values for each question.</li>
@@ -337,3 +337,4 @@ export default function CreateExamPage() {
     </div>
   )
 }
+

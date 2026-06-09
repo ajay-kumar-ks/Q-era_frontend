@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 
@@ -322,20 +322,20 @@ export default function MyProfilePage() {
         <form className="mb-8 space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900" onSubmit={saveChanges}>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-slate-700" htmlFor="profile-name">Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="profile-name">Name</label>
               <input
                 id="profile-name"
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 value={form.name}
                 onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700" htmlFor="profile-avatar">Profile picture URL</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="profile-avatar">Profile picture URL</label>
               <input
                 id="profile-avatar"
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 value={form.avatar_url}
                 onChange={(event) => setForm((prev) => ({ ...prev, avatar_url: event.target.value }))}
                 placeholder="https://..."
@@ -344,10 +344,10 @@ export default function MyProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700" htmlFor="profile-bio">Bio</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="profile-bio">Bio</label>
             <textarea
               id="profile-bio"
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               rows={4}
               value={form.bio}
               onChange={(event) => setForm((prev) => ({ ...prev, bio: event.target.value }))}
@@ -355,10 +355,10 @@ export default function MyProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700" htmlFor="profile-goals">Learning goals</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="profile-goals">Learning goals</label>
             <textarea
               id="profile-goals"
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               rows={3}
               value={form.learning_goals}
               onChange={(event) => setForm((prev) => ({ ...prev, learning_goals: event.target.value }))}
@@ -366,11 +366,11 @@ export default function MyProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700" htmlFor="profile-topic">Preferred topics</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="profile-topic">Preferred topics</label>
             <div className="mt-1 flex flex-col gap-2 sm:flex-row">
               <input
                 id="profile-topic"
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 value={topicInput}
                 onChange={(event) => setTopicInput(event.target.value)}
                 onKeyDown={(event) => {
@@ -393,7 +393,7 @@ export default function MyProfilePage() {
             </div>
           </div>
 
-          <fieldset className="rounded-xl border border-slate-200 p-4">
+          <fieldset className="rounded-xl border border-slate-200 p-4 dark:border-slate-700">
             <legend className="px-1 text-sm font-semibold text-slate-700">Notification preferences</legend>
             <div className="mt-3 grid gap-3 sm:grid-cols-3">
               {[
@@ -401,7 +401,7 @@ export default function MyProfilePage() {
                 ["in_app", "In-app"],
                 ["exam_reminders", "Exam reminders"],
               ].map(([key, label]) => (
-                <label key={key} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                <label key={key} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={Boolean(form.notification_preferences[key])}
@@ -533,3 +533,4 @@ export default function MyProfilePage() {
     </div>
   );
 }
+

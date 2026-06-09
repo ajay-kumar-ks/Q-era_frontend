@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
 
@@ -35,7 +35,7 @@ function CommentItem({ comment, depth, onReply, onUpvote, onMarkHelpful, actionL
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs text-slate-500">{comment.author_name || `User #${comment.user_id}`}</p>
-          <p className="mt-1 text-xs text-slate-400">{new Date(comment.created_at).toLocaleString()}</p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{new Date(comment.created_at).toLocaleString()}</p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium">
           <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-600">{comment.upvotes_count} upvotes</span>
@@ -43,7 +43,7 @@ function CommentItem({ comment, depth, onReply, onUpvote, onMarkHelpful, actionL
         </div>
       </div>
 
-      <p className="mt-3 text-sm text-slate-800">
+      <p className="mt-3 text-sm text-slate-800 dark:text-slate-200">
         {comment.is_flagged ? <span className="italic text-slate-400">Comment hidden</span> : comment.content}
       </p>
 
@@ -85,7 +85,7 @@ function CommentItem({ comment, depth, onReply, onUpvote, onMarkHelpful, actionL
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             rows={2}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
             placeholder="Write a reply..."
             required
           />
@@ -210,11 +210,11 @@ export default function CommentSection({ questionId }) {
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+    <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Comments</h3>
-          <p className="text-sm text-slate-600">Join the discussion and sort by newest or most helpful.</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Comments</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Join the discussion and sort by newest or most helpful.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {[
@@ -242,7 +242,7 @@ export default function CommentSection({ questionId }) {
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
           rows={3}
           placeholder="Add a comment..."
           required
@@ -279,3 +279,4 @@ export default function CommentSection({ questionId }) {
     </section>
   )
 }
+

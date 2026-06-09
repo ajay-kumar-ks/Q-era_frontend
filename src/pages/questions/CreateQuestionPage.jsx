@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -11,7 +11,7 @@ function SimilarQuestionModal({ open, duplicateInfo, onCancel, onConfirm }) {
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/50 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <h3 className="text-lg font-semibold text-slate-900">Possible duplicate detected</h3>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
           Similarity confidence: <strong>{Math.round((duplicateInfo?.confidence || 0) * 100)}%</strong>
         </p>
         {duplicateInfo?.reason && (
@@ -291,21 +291,21 @@ export default function CreateQuestionPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-3xl font-bold text-slate-900">Create Question</h1>
-      <p className="mt-2 text-sm text-slate-600">Step {step} of 3</p>
+      <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Create Question</h1>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Step {step} of 3</p>
 
       {/* NOT a <form> — avoids all browser native submit/validation issues */}
-      <div className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
 
         {/* ── Step 1: Core question details ── */}
         {step === 1 && (
           <>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Question type</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Question type</label>
               <select
                 value={form.type}
                 onChange={(e) => updateForm('type', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               >
                 {QUESTION_TYPES.map((type) => (
                   <option key={type} value={type}>{type}</option>
@@ -314,14 +314,14 @@ export default function CreateQuestionPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Title <span className="text-rose-500">*</span>
               </label>
               <input
                 value={form.title}
                 onChange={(e) => updateForm('title', e.target.value)}
                 minLength={5}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
               {form.title.trim().length > 0 && form.title.trim().length < 5 && (
                 <p className="mt-1 text-xs text-rose-500">Minimum 5 characters</p>
@@ -329,12 +329,12 @@ export default function CreateQuestionPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Description</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
               <textarea
                 value={form.description}
                 onChange={(e) => updateForm('description', e.target.value)}
                 rows={4}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
 
@@ -345,7 +345,7 @@ export default function CreateQuestionPage() {
                 const uploaded_labels = { image_url: 'Image uploaded', media_url: 'Media uploaded', attachment_url: 'Attachment uploaded' }
                 return (
                   <div key={field}>
-                    <label className="block text-sm font-medium text-slate-700">{labels[field]}</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{labels[field]}</label>
                     {uploadedFields[field] ? (
                       <div className="mt-1 flex items-center gap-3 rounded-lg border border-slate-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
                         <span>{uploaded_labels[field]}</span>
@@ -360,7 +360,7 @@ export default function CreateQuestionPage() {
                         value={form[field]}
                         onChange={(e) => updateForm(field, e.target.value)}
                         placeholder={placeholders[field]}
-                        className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
                       />
                     )}
                   </div>
@@ -368,14 +368,14 @@ export default function CreateQuestionPage() {
               })}
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700">Upload target</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Upload target</label>
                   <select
                     value={uploadTarget}
                     onChange={(e) => setUploadTarget(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                   >
                     <option value="image_url">Question image</option>
                     <option value="media_url">Media file</option>
@@ -383,13 +383,13 @@ export default function CreateQuestionPage() {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700">Upload file to Cloudinary</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Upload file to Cloudinary</label>
                   <div className="mt-1 flex gap-2">
                     <input
                       type="file"
                       accept="image/*,video/*,audio/*,.pdf"
                       onChange={(e) => setSelectedUploadFile(e.target.files?.[0] ?? null)}
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                     />
                     <button
                       type="button"
@@ -406,12 +406,12 @@ export default function CreateQuestionPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Correct answer <span className="text-rose-500">*</span>
                 {isMCQ && <span className="ml-1 text-xs font-normal text-slate-400">(select from options in next step)</span>}
               </label>
               {isMCQ ? (
-                <p className="mt-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-400">
+                <p className="mt-1 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-400 dark:border-slate-600 dark:bg-slate-800">
                   {form.correct_answer ? (
                     <span className="text-emerald-700 font-medium">✓ &quot;{form.correct_answer}&quot; selected as correct</span>
                   ) : (
@@ -422,7 +422,7 @@ export default function CreateQuestionPage() {
                 <input
                   value={form.correct_answer}
                   onChange={(e) => updateForm('correct_answer', e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 />
               )}
             </div>
@@ -434,7 +434,7 @@ export default function CreateQuestionPage() {
           <>
             {isMCQ ? (
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Options
                   <span className="ml-1 text-xs font-normal text-slate-400">(at least 2 · click the circle to mark correct)</span>
                 </label>
@@ -479,14 +479,14 @@ export default function CreateQuestionPage() {
                           }}
                           placeholder={`Option ${idx + 1}`}
                           aria-label={`Option ${idx + 1} text`}
-                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <input
                           value={opt.image_url || ''}
                           onChange={(e) => updateOptionImage(idx, e.target.value)}
                           placeholder="Optional image URL"
                           aria-label={`Option ${idx + 1} image URL`}
-                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                         />
                       </div>
 
@@ -525,11 +525,11 @@ export default function CreateQuestionPage() {
         {step === 3 && (
           <>
             <div>
-              <label className="block text-sm font-medium text-slate-700">Difficulty</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Difficulty</label>
               <select
                 value={form.difficulty}
                 onChange={(e) => updateForm('difficulty', e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               >
                 <option value="">Auto (AI will suggest)</option>
                 {DIFFICULTY_TYPES.map((d) => (
@@ -544,17 +544,17 @@ export default function CreateQuestionPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">Explanation (optional)</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Explanation (optional)</label>
               <textarea
                 value={form.explanation}
                 onChange={(e) => updateForm('explanation', e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Tags
                 <span className="ml-1 text-xs font-normal text-slate-400">(AI will suggest if left empty)</span>
               </label>
@@ -563,7 +563,7 @@ export default function CreateQuestionPage() {
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagInputKey}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
                   placeholder="Type a tag and press Enter or Add"
                 />
                 <button type="button" onClick={addTag} className="rounded-lg bg-slate-100 px-3 py-2 text-xs">
@@ -586,7 +586,7 @@ export default function CreateQuestionPage() {
               )}
             </div>
 
-            <label className="inline-flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.is_public}
@@ -655,3 +655,4 @@ export default function CreateQuestionPage() {
     </div>
   )
 }
+

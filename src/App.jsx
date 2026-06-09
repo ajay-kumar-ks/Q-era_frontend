@@ -28,6 +28,7 @@ import ExamManagementPage from './pages/admin/ExamManagementPage'
 import ImportExportPage from './pages/admin/ImportExportPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminApprovalPage from './pages/admin/AdminApprovalPage'
+import TutorPage from './pages/ai/TutorPage'
 import { useAuth } from './context/AuthContext'
 import Loader from './components/common/Loader'
 
@@ -70,6 +71,7 @@ function App() {
           <Route path="/bookmarks" element={<BookmarksPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/tutor" element={<TutorPage />} />
         </Route>
       </Route>
 

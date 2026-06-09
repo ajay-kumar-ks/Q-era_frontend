@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
+import AIChatWidget from '../ai/AIChatWidget'
 
 export default function AppLayout() {
   return (
@@ -8,6 +9,7 @@ export default function AppLayout() {
       <main className="pb-24 md:pb-0">
         <Outlet />
       </main>
+      <AIChatWidget />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -353,8 +353,8 @@ export default function AttendExamPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">{exam.title}</h1>
-          <p className="mt-2 text-slate-600">Attempt #{attempt.attemptNumber}. You have {formatTimer(remainingSeconds)} remaining.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{exam.title}</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">Attempt #{attempt.attemptNumber}. You have {formatTimer(remainingSeconds)} remaining.</p>
         </div>
         <button
           onClick={handleManualSubmit}
@@ -373,10 +373,10 @@ export default function AttendExamPage() {
               const question = perQuestion[currentQuestionIndex]
               if (!question) return null
               return (
-                <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <p className="text-lg font-semibold text-slate-900">Q{currentQuestionIndex + 1}. {question.title}</p>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">Q{currentQuestionIndex + 1}. {question.title}</p>
                       {question.description && (
                         <pre className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-slate-900 px-4 py-3 text-sm text-slate-100 whitespace-pre-wrap font-mono">
                           {question.description}
@@ -404,7 +404,7 @@ export default function AttendExamPage() {
                   {question.options?.length ? (
                     <div className="mt-4 space-y-3">
                       {question.options.map((option) => (
-                        <label key={option.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <label key={option.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
                           <input
                             type={question.type === 'mcq' ? 'radio' : 'radio'}
                             name={`question-${question.id}`}
@@ -413,7 +413,7 @@ export default function AttendExamPage() {
                             onChange={(e) => setAnswer(question.id, e.target.value)}
                             className="h-4 w-4 text-indigo-600"
                           />
-                          <span className="text-sm text-slate-700">
+                          <span className="text-sm text-slate-700 dark:text-slate-200">
                             {option.option_order}. {option.option_text}
                             {option.image_url ? (
                               <img src={option.image_url} alt="" className="mt-2 max-h-36 rounded-lg border border-slate-100 object-contain" />
@@ -428,7 +428,7 @@ export default function AttendExamPage() {
                       onChange={(e) => setAnswer(question.id, e.target.value)}
                       placeholder="Type your answer here"
                       rows={4}
-                      className="mt-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                      className="mt-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
                     />
                   )}
 
@@ -451,10 +451,10 @@ export default function AttendExamPage() {
             })()
           ) : (
             perQuestion.map((question, index) => (
-            <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <article key={question.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-slate-900">Q{index + 1}. {question.title}</p>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">Q{index + 1}. {question.title}</p>
                   {question.description && (
                     <pre className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-slate-900 px-4 py-3 text-sm text-slate-100 whitespace-pre-wrap font-mono">
                       {question.description}
@@ -486,7 +486,7 @@ export default function AttendExamPage() {
               {question.options?.length ? (
                 <div className="mt-4 space-y-3">
                   {question.options.map((option) => (
-                    <label key={option.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <label key={option.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
                       <input
                         type={question.type === 'mcq' ? 'radio' : 'radio'}
                         name={`question-${question.id}`}
@@ -495,7 +495,7 @@ export default function AttendExamPage() {
                         onChange={(e) => setAnswer(question.id, e.target.value)}
                         className="h-4 w-4 text-indigo-600"
                       />
-                      <span className="text-sm text-slate-700">
+                      <span className="text-sm text-slate-700 dark:text-slate-200">
                         {option.option_order}. {option.option_text}
                         {option.image_url ? (
                           <img src={option.image_url} alt="" className="mt-2 max-h-36 rounded-lg border border-slate-100 object-contain" />
@@ -510,7 +510,7 @@ export default function AttendExamPage() {
                   onChange={(e) => setAnswer(question.id, e.target.value)}
                   placeholder="Type your answer here"
                   rows={4}
-                  className="mt-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="mt-4 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
                 />
               )}
             </article>
@@ -519,9 +519,9 @@ export default function AttendExamPage() {
         </section>
 
         <aside className="space-y-5">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Exam summary</h2>
-            <dl className="mt-4 space-y-3 text-sm text-slate-600">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Exam summary</h2>
+            <dl className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-400">
               <div className="flex justify-between">
                 <span>Duration</span>
                 <span>{exam.duration_minutes} min</span>
@@ -541,9 +541,9 @@ export default function AttendExamPage() {
             </dl>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Instructions</h2>
-            <ul className="mt-4 space-y-3 text-sm text-slate-600">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Instructions</h2>
+            <ul className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-400">
               <li>Answer every question to maximize your score.</li>
               <li>Your answers are saved automatically while you work.</li>
               <li>When time reaches zero, the exam submits automatically.</li>
@@ -554,3 +554,4 @@ export default function AttendExamPage() {
     </div>
   )
 }
+
