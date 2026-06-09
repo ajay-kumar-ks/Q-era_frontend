@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import Loader from '../../components/common/Loader'
+import { getStoredUser } from '../../services/api'
+import GenerateExamModal from '../../components/ai/GenerateExamModal'
 
 export default function ExamsPage() {
   const [exams, setExams] = useState([])
@@ -11,6 +13,10 @@ export default function ExamsPage() {
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [importMessage, setImportMessage] = useState('')
+  const [showAIModal, setShowAIModal] = useState(false)
+
+  const currentUser = getStoredUser()
+  const isAdmin = currentUser?.role === 'admin'
 
   useEffect(() => {
     let cancelled = false
@@ -92,13 +98,34 @@ export default function ExamsPage() {
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Exams</h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">Browse available exams, start a session, or create a new exam.</p>
         </div>
-        <Link
-          to="/exams/create"
-          className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-        >
-          Create exam
-        </Link>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setShowAIModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+            >
+              <span>✦</span> Generate with AI
+            </button>
+          )}
+          <Link
+            to="/exams/create"
+            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          >
+            Create exam
+          </Link>
+        </div>
       </div>
+
+      {/* AI Generate Exam Modal */}
+      {showAIModal && (
+        <GenerateExamModal
+          onClose={() => setShowAIModal(false)}
+          onCreated={(exam) => {
+            setExams((prev) => [exam, ...prev])
+          }}
+        />
+      )}
 
       <div className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 md:grid-cols-2">
         <div className="space-y-3">

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../../services/api'
+import AIExplanation from '../../components/ai/AIExplanation'
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60)
@@ -14,7 +15,9 @@ function normalize(value) {
 
 function isCorrectOption(question, option) {
   const correct = normalize(question?.correct_answer)
-  return correct && (normalize(option.option_text) === correct || String(option.option_order) === correct)
+  // Match only by option_text — never by option_order, which causes false positives
+  // when the answer is a number like "3" matching the 3rd option's order
+  return correct !== '' && normalize(option.option_text) === correct
 }
 
 export default function ExamResultPage() {
@@ -98,6 +101,11 @@ export default function ExamResultPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="font-semibold text-slate-900">{question ? question.title : `Question ${questionId}`}</p>
+                    {question?.description && (
+                      <pre className="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-slate-900 px-4 py-3 text-sm text-slate-100 whitespace-pre-wrap font-mono">
+                        {question.description}
+                      </pre>
+                    )}
                     <p className="text-sm text-slate-500">Your answer</p>
                   </div>
                   <span className={`rounded-full px-3 py-1 text-sm ${correct ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
@@ -143,6 +151,16 @@ export default function ExamResultPage() {
                     })}
                   </div>
                 ) : null}
+
+                {/* AI Explanation — shown for all questions, prominent for wrong answers */}
+                {question && (
+                  <AIExplanation
+                    questionId={question.id}
+                    userAnswer={answer || null}
+                    isCorrect={correct}
+                    compact={true}
+                  />
+                )}
               </article>
             )
           })}

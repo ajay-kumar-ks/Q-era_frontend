@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../../services/api'
 import CommentSection from '../../components/question/CommentSection'
+import AIExplanation from '../../components/ai/AIExplanation'
 
 export default function QuestionDetailPage() {
   const { id } = useParams()
   const [question, setQuestion] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [showExplanation, setShowExplanation] = useState(false)
-  const [aiExplanation, setAiExplanation] = useState('')
   const [bookmarked, setBookmarked] = useState(false)
 
   useEffect(() => {
@@ -58,26 +57,6 @@ export default function QuestionDetailPage() {
       setBookmarked(Boolean(data.bookmarked))
     } catch {
       setBookmarked(!next)
-    }
-  }
-
-  const fetchAIExplanation = async () => {
-    if (!question) return
-    if (aiExplanation) {
-      setShowExplanation((v) => !v)
-      return
-    }
-    try {
-      const { data } = await api.post('/ai/explain', {
-        question_id: Number(id),
-        question: question.title,
-      })
-      const text = data?.explanation || data?.answer || question.explanation || 'No explanation available.'
-      setAiExplanation(text)
-    } catch {
-      setAiExplanation(question.explanation || 'AI explanation service is unavailable.')
-    } finally {
-      setShowExplanation(true)
     }
   }
 
@@ -172,20 +151,10 @@ export default function QuestionDetailPage() {
           >
             {bookmarked ? 'Bookmarked' : 'Bookmark'}
           </button>
-          <button
-            type="button"
-            onClick={fetchAIExplanation}
-            className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
-          >
-            {showExplanation ? 'Hide AI explanation' : 'Show AI explanation'}
-          </button>
         </div>
 
-        {showExplanation && (
-          <div className="mt-4 rounded-xl bg-indigo-50 p-4 text-sm text-indigo-900">
-            {aiExplanation || 'Loading explanation...'}
-          </div>
-        )}
+        {/* AI Explanation */}
+        <AIExplanation questionId={Number(id)} />
       </article>
 
       <div className="mt-6">
