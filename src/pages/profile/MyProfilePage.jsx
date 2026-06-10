@@ -1,4 +1,6 @@
 ﻿import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Pencil, Trash2, Eye, EyeOff, Check, X, Plus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 
@@ -21,6 +23,7 @@ function Avatar({ profile }) {
 }
 
 export default function MyProfilePage() {
+  const navigate = useNavigate();
   const { refreshUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,20 @@ export default function MyProfilePage() {
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  // My Content tab
+  const [contentTab, setContentTab] = useState("questions"); // "questions" | "exams"
+  const [myQuestions, setMyQuestions] = useState([]);
+  const [myExams, setMyExams] = useState([]);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
+  const [editingExam, setEditingExam] = useState(null);
+  const [savingContent, setSavingContent] = useState(false);
+  const [qPage, setQPage] = useState(1);
+  const [ePage, setEPage] = useState(1);
+  const [qTotal, setQTotal] = useState(0);
+  const [eTotal, setETotal] = useState(0);
+  const PAGE_SIZE = 10;
 
   const getBadgeTheme = (badge) => {
     const name = (badge.name || "").toLowerCase();
@@ -271,6 +288,102 @@ export default function MyProfilePage() {
     setForm((prev) => ({ ...prev, preferred_topics: prev.preferred_topics.filter((item) => item !== topic) }));
   };
 
+  // ── Content management ──
+  async function loadMyQuestions(page = qPage) {
+    setContentLoading(true);
+    try {
+      const { data } = await api.get(`/users/me/questions?page=${page}&limit=${PAGE_SIZE}`);
+      setMyQuestions(data.items || []);
+      setQTotal(data.total || 0);
+    } catch { /* ignore */ }
+    finally { setContentLoading(false); }
+  }
+
+  async function loadMyExams(page = ePage) {
+    setContentLoading(true);
+    try {
+      const { data } = await api.get(`/users/me/exams?page=${page}&limit=${PAGE_SIZE}`);
+      setMyExams(data.items || []);
+      setETotal(data.total || 0);
+    } catch { /* ignore */ }
+    finally { setContentLoading(false); }
+  }
+
+  useEffect(() => {
+    if (contentTab === "questions") loadMyQuestions(qPage);
+    else loadMyExams(ePage);
+  }, [contentTab, qPage, ePage]);
+
+  async function toggleQuestionVisibility(q) {
+    const making = q.is_public ? "private" : "public";
+    if (!window.confirm(`Make this question ${making}?`)) return;
+    try {
+      await api.put(`/questions/${q.id}`, { is_public: !q.is_public });
+      setMyQuestions((prev) => prev.map((x) => x.id === q.id ? { ...x, is_public: !q.is_public } : x));
+    } catch { /* ignore */ }
+  }
+
+  async function deleteQuestion(id) {
+    if (!window.confirm("Delete this question permanently?")) return;
+    try {
+      await api.delete(`/questions/${id}`);
+      setMyQuestions((prev) => prev.filter((q) => q.id !== id));
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to delete question.");
+    }
+  }
+
+  async function saveQuestion() {
+    if (!editingQuestion) return;
+    setSavingContent(true);
+    try {
+      const { data } = await api.put(`/questions/${editingQuestion.id}`, {
+        title: editingQuestion.title,
+        description: editingQuestion.description || null,
+        is_public: editingQuestion.is_public,
+      });
+      setMyQuestions((prev) => prev.map((q) => q.id === data.id ? data : q));
+      setEditingQuestion(null);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to save question.");
+    } finally { setSavingContent(false); }
+  }
+
+  async function toggleExamVisibility(e) {
+    const making = e.is_public ? "private" : "public";
+    if (!window.confirm(`Make this exam ${making}?`)) return;
+    try {
+      await api.put(`/exams/${e.id}`, { is_public: !e.is_public });
+      setMyExams((prev) => prev.map((x) => x.id === e.id ? { ...x, is_public: !e.is_public } : x));
+    } catch { /* ignore */ }
+  }
+
+  async function deleteExam(id) {
+    if (!window.confirm("Delete this exam permanently?")) return;
+    try {
+      await api.delete(`/exams/${id}`);
+      setMyExams((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to delete exam.");
+    }
+  }
+
+  async function saveExam() {
+    if (!editingExam) return;
+    setSavingContent(true);
+    try {
+      const { data } = await api.put(`/exams/${editingExam.id}`, {
+        title: editingExam.title,
+        description: editingExam.description || null,
+        is_public: editingExam.is_public,
+      });
+      setMyExams((prev) => prev.map((e) => e.id === data.id ? data : e));
+      setEditingExam(null);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Failed to save exam.");
+    } finally { setSavingContent(false); }
+  }
+
   async function saveChanges(event) {
     event.preventDefault();
     setError(null);
@@ -473,6 +586,261 @@ export default function MyProfilePage() {
               <span key={topic} className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">#{topic}</span>
             )) : <span className="text-sm text-slate-500">No preferred topics yet.</span>}
           </div>
+        </div>
+      </div>
+
+      {/* ── My Content: Questions & Exams ── */}
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        {/* Tab header */}
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+          <div className="flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+            {["questions", "exams"].map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setContentTab(tab)}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors capitalize ${
+                  contentTab === tab
+                    ? "bg-white text-indigo-700 shadow-sm dark:bg-slate-700 dark:text-indigo-300"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
+                }`}
+              >
+                My {tab}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate(contentTab === "questions" ? "/questions/create" : "/exams/create")}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+          >
+            <Plus size={13} /> New {contentTab === "questions" ? "question" : "exam"}
+          </button>
+        </div>
+
+        <div className="p-4">
+          {contentLoading ? (
+            <p className="py-8 text-center text-sm text-slate-400">Loading…</p>
+          ) : contentTab === "questions" ? (
+            myQuestions.length === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-400">No questions created yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {myQuestions.map((q) =>
+                  editingQuestion?.id === q.id ? (
+                    /* ── inline edit form ── */
+                    <div key={q.id} className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-900/20">
+                      <input
+                        value={editingQuestion.title}
+                        onChange={(e) => setEditingQuestion((p) => ({ ...p, title: e.target.value }))}
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                        placeholder="Question title"
+                      />
+                      <textarea
+                        value={editingQuestion.description || ""}
+                        onChange={(e) => setEditingQuestion((p) => ({ ...p, description: e.target.value }))}
+                        rows={2}
+                        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                        placeholder="Description (optional)"
+                      />
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                          <input type="checkbox" checked={editingQuestion.is_public}
+                            onChange={(e) => setEditingQuestion((p) => ({ ...p, is_public: e.target.checked }))} className="rounded" />
+                          Public
+                        </label>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => setEditingQuestion(null)}
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400">
+                            <X size={13} />
+                          </button>
+                          <button type="button" onClick={saveQuestion} disabled={savingContent}
+                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-40">
+                            <Check size={13} /> Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* ── question row ── */
+                    <div key={q.id} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{q.title}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            q.difficulty === "easy" ? "bg-emerald-100 text-emerald-700" :
+                            q.difficulty === "hard" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"
+                          }`}>{q.difficulty}</span>
+                          <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] text-slate-600 dark:bg-slate-700 dark:text-slate-300">{q.type}</span>
+                          {/* Visibility pill — click to toggle */}
+                          <button
+                            type="button"
+                            onClick={() => toggleQuestionVisibility(q)}
+                            title={q.is_public ? "Click to make private" : "Click to make public"}
+                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-colors ${
+                              q.is_public
+                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                : "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
+                            }`}
+                          >
+                            {q.is_public ? "● Public" : "● Private"}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex flex-shrink-0 items-center gap-1">
+                        <button type="button" onClick={() => setEditingQuestion({ id: q.id, title: q.title, description: q.description || "", is_public: q.is_public })}
+                          title="Edit" className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-indigo-600 dark:hover:bg-slate-700">
+                          <Pencil size={15} />
+                        </button>
+                        <button type="button" onClick={() => navigate(`/questions/${q.id}`)} title="View"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700">
+                          <Eye size={15} />
+                        </button>
+                        <button type="button" onClick={() => deleteQuestion(q.id)} title="Delete"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/30">
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            )
+          ) : (
+            /* ── Exams tab ── */
+            myExams.length === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-400">No exams created yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {myExams.map((e) =>
+                  editingExam?.id === e.id ? (
+                    <div key={e.id} className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-800 dark:bg-indigo-900/20">
+                      <input
+                        value={editingExam.title}
+                        onChange={(ev) => setEditingExam((p) => ({ ...p, title: ev.target.value }))}
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                        placeholder="Exam title"
+                      />
+                      <textarea
+                        value={editingExam.description || ""}
+                        onChange={(ev) => setEditingExam((p) => ({ ...p, description: ev.target.value }))}
+                        rows={2}
+                        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                        placeholder="Description (optional)"
+                      />
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                          <input type="checkbox" checked={editingExam.is_public}
+                            onChange={(ev) => setEditingExam((p) => ({ ...p, is_public: ev.target.checked }))} className="rounded" />
+                          Public
+                        </label>
+                        <div className="flex gap-2">
+                          <button type="button" onClick={() => setEditingExam(null)}
+                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400">
+                            <X size={13} />
+                          </button>
+                          <button type="button" onClick={saveExam} disabled={savingContent}
+                            className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-40">
+                            <Check size={13} /> Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={e.id} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">{e.title}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] text-slate-600 dark:bg-slate-700 dark:text-slate-300">{e.duration_minutes} min</span>
+                          <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] text-slate-600 dark:bg-slate-700 dark:text-slate-300">{e.total_marks} pts</span>
+                          {/* Visibility pill */}
+                          <button
+                            type="button"
+                            onClick={() => toggleExamVisibility(e)}
+                            title={e.is_public ? "Click to make private" : "Click to make public"}
+                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-colors ${
+                              e.is_public
+                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                : "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300"
+                            }`}
+                          >
+                            {e.is_public ? "● Public" : "● Private"}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex flex-shrink-0 items-center gap-1">
+                        <button type="button" onClick={() => setEditingExam({ id: e.id, title: e.title, description: e.description || "", is_public: e.is_public })}
+                          title="Edit" className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-indigo-600 dark:hover:bg-slate-700">
+                          <Pencil size={15} />
+                        </button>
+                        <button type="button" onClick={() => navigate(`/exams/${e.id}`)} title="View"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700">
+                          <Eye size={15} />
+                        </button>
+                        <button type="button" onClick={() => deleteExam(e.id)} title="Delete"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/30">
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            )
+          )}
+
+          {/* ── Pagination ── */}
+          {contentTab === "questions" && myQuestions.length > 0 && (
+            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
+              <p className="text-xs text-slate-400">
+                Page {qPage} · showing {myQuestions.length} item{myQuestions.length !== 1 ? "s" : ""}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setQPage((p) => Math.max(1, p - 1))}
+                  disabled={qPage <= 1 || contentLoading}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  ← Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQPage((p) => p + 1)}
+                  disabled={myQuestions.length < PAGE_SIZE || contentLoading}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {contentTab === "exams" && myExams.length > 0 && (
+            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
+              <p className="text-xs text-slate-400">
+                Page {ePage} · showing {myExams.length} item{myExams.length !== 1 ? "s" : ""}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEPage((p) => Math.max(1, p - 1))}
+                  disabled={ePage <= 1 || contentLoading}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  ← Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEPage((p) => p + 1)}
+                  disabled={myExams.length < PAGE_SIZE || contentLoading}
+                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
