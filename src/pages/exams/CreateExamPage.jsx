@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
+import { fetchGroups } from '../../services/groups'
 
 export default function CreateExamPage() {
   const navigate = useNavigate()
@@ -8,11 +9,14 @@ export default function CreateExamPage() {
   const [selected, setSelected] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [groups, setGroups] = useState([])
   const [form, setForm] = useState({
     title: '',
     description: '',
     duration_minutes: 20,
     is_public: true,
+    audience: 'public',      // 'public' | 'private' | 'groups'
+    group_ids: [],
     randomize_order: false,
     randomize_options: false,
     secure_mode: false,
@@ -22,30 +26,37 @@ export default function CreateExamPage() {
   const [search, setSearch] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  const [groupsLoading, setGroupsLoading] = useState(false)
+
   useEffect(() => {
     let cancelled = false
+    // Load questions and groups independently — groups show immediately without waiting for questions
     async function loadQuestions() {
       setLoading(true)
       setError('')
       try {
         const { data } = await api.get('/questions/', { params: { page: 1, limit: 100 } })
-        if (!cancelled) {
-          setQuestions(data || [])
-        }
+        if (!cancelled) setQuestions(data || [])
       } catch (err) {
-        if (!cancelled) {
-          setError(err.response?.data?.detail || 'Unable to load questions.')
-        }
+        if (!cancelled) setError(err.response?.data?.detail || 'Unable to load questions.')
       } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
+        if (!cancelled) setLoading(false)
+      }
+    }
+    async function loadGroups() {
+      setGroupsLoading(true)
+      try {
+        const { data } = await api.get('/exams/groups-for-exam')
+        if (!cancelled) setGroups(Array.isArray(data) ? data : [])
+      } catch {
+        if (!cancelled) setGroups([])
+      } finally {
+        if (!cancelled) setGroupsLoading(false)
       }
     }
     loadQuestions()
-    return () => {
-      cancelled = true
-    }
+    loadGroups()
+    return () => { cancelled = true }
   }, [])
 
   const addQuestion = (question) => {
@@ -100,7 +111,9 @@ export default function CreateExamPage() {
         description: form.description,
         duration_minutes: Number(form.duration_minutes),
         total_marks: totalMarks,
-        is_public: form.is_public,
+        is_public: form.audience === 'public',
+        audience: form.audience,
+        group_ids: form.audience === 'groups' ? form.group_ids : [],
         randomize_order: form.randomize_order,
         randomize_options: form.randomize_options,
         secure_mode: form.secure_mode,
@@ -172,40 +185,83 @@ export default function CreateExamPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            {/* Audience selector */}
+            <div className="sm:col-span-2">
+              <label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Audience</label>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {[
+                  { value: 'public',  label: '🌐 Public',  desc: 'Visible to all students' },
+                  { value: 'private', label: '🔒 Private', desc: 'Only you can see it' },
+                  { value: 'groups',  label: '👥 Groups',  desc: 'Specific student groups' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleChange('audience', opt.value)}
+                    className={`flex flex-col items-start rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                      form.audience === opt.value
+                        ? 'border-indigo-400 bg-indigo-50 text-indigo-700 dark:border-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300'
+                        : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                    }`}
+                  >
+                    <span className="font-semibold">{opt.label}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">{opt.desc}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Group picker */}
+              {form.audience === 'groups' && (
+                <div className="mt-3">
+                  {groupsLoading ? (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Loading groups…</p>
+                  ) : groups.length === 0 ? (
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      No groups found. <a href="/admin/groups" className="underline">Create groups first →</a>
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {groups.map(g => (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => {
+                            const ids = form.group_ids.includes(g.id)
+                              ? form.group_ids.filter(id => id !== g.id)
+                              : [...form.group_ids, g.id]
+                            handleChange('group_ids', ids)
+                          }}
+                          className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition ${
+                            form.group_ids.includes(g.id)
+                              ? 'border-transparent text-white'
+                              : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                          }`}
+                          style={form.group_ids.includes(g.id) ? { backgroundColor: g.color } : {}}
+                        >
+                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: form.group_ids.includes(g.id) ? 'rgba(255,255,255,0.6)' : g.color }} />
+                          {g.name}
+                          <span className="opacity-60">({g.member_count})</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {form.audience === 'groups' && form.group_ids.length === 0 && (
+                    <p className="mt-1 text-xs text-rose-500">Select at least one group.</p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.is_public}
-                onChange={(e) => handleChange('is_public', e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600"
-              />
-              Public exam
-            </label>
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.randomize_order}
-                onChange={(e) => handleChange('randomize_order', e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600"
-              />
+              <input type="checkbox" checked={form.randomize_order} onChange={(e) => handleChange('randomize_order', e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
               Randomize question order
             </label>
             <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.randomize_options}
-                onChange={(e) => handleChange('randomize_options', e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600"
-              />
+              <input type="checkbox" checked={form.randomize_options} onChange={(e) => handleChange('randomize_options', e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
               Randomize question options
             </label>
             <label className="flex items-center gap-3 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.secure_mode}
-                onChange={(e) => handleChange('secure_mode', e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-indigo-600"
-              />
+              <input type="checkbox" checked={form.secure_mode} onChange={(e) => handleChange('secure_mode', e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
               Secure exam mode
             </label>
           </div>
@@ -337,4 +393,7 @@ export default function CreateExamPage() {
     </div>
   )
 }
+
+
+
 

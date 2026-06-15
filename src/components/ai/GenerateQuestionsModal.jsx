@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Trash2, Plus, ChevronDown, ChevronUp, AlertTriangle, CheckCircle } from 'lucide-react'
 import api from '../../services/api'
@@ -200,6 +200,16 @@ export default function GenerateQuestionsModal({ isAdmin, onClose, onCreated }) 
   const [error, setError] = useState('')
   const [questions, setQuestions] = useState([])   // list of full question objects
   const [requestSent, setRequestSent] = useState(false)
+  const [groups, setGroups] = useState([])
+
+  // Load groups for the audience picker (admin only)
+  useEffect(() => {
+    if (isAdmin) {
+      api.get('/exams/groups-for-exam')
+        .then(({ data }) => setGroups(Array.isArray(data) ? data : []))
+        .catch((err) => console.warn('Groups load failed:', err?.response?.status, err?.message))
+    }
+  }, [isAdmin])
 
   const updGen = (f, v) => setGenForm((p) => ({ ...p, [f]: v }))
   const updExam = (f, v) => setExamForm((p) => ({ ...p, [f]: v }))
@@ -221,6 +231,8 @@ export default function GenerateQuestionsModal({ isAdmin, onClose, onCreated }) 
         duration_minutes: Math.max(10, n * 2),
         marks_per_question: 1,
         is_public: genForm.is_public,
+        audience: 'public',
+        group_ids: [],
         randomize_order: false, randomize_options: false, secure_mode: false,
         scheduled_at: '', deadline: '',
       })
@@ -272,7 +284,9 @@ export default function GenerateQuestionsModal({ isAdmin, onClose, onCreated }) 
         description: examForm.description.trim() || null,
         duration_minutes: Number(examForm.duration_minutes) || 30,
         total_marks: questions.length * mpq,
-        is_public: examForm.is_public,
+        is_public: examForm.audience === 'public',
+        audience: examForm.audience || 'public',
+        group_ids: examForm.audience === 'groups' ? (examForm.group_ids || []) : [],
         randomize_order: examForm.randomize_order,
         randomize_options: examForm.randomize_options,
         secure_mode: examForm.secure_mode,
@@ -438,6 +452,60 @@ export default function GenerateQuestionsModal({ isAdmin, onClose, onCreated }) 
                 &ensp;·&ensp;Duration: <strong className="text-slate-700 dark:text-slate-200">{examForm.duration_minutes} min</strong>
               </p>
 
+              {/* Audience selector */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Audience</label>
+                <div className="mt-1.5 flex flex-wrap gap-2">
+                  {[
+                    { value: 'public',  label: '🌐 Public' },
+                    { value: 'private', label: '🔒 Private' },
+                    { value: 'groups',  label: '👥 Groups' },
+                  ].map(opt => (
+                    <button key={opt.value} type="button"
+                      onClick={() => updExam('audience', opt.value)}
+                      className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+                        examForm.audience === opt.value
+                          ? 'border-indigo-400 bg-indigo-50 text-indigo-700 dark:border-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300'
+                          : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                      }`}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+
+                {examForm.audience === 'groups' && (
+                  <div className="mt-2">
+                    {groups.length === 0
+                      ? <p className="text-xs text-amber-600">No groups available. Create groups in Admin → Student Groups first.</p>
+                      : <div className="flex flex-wrap gap-1.5">
+                          {groups.map(g => (
+                            <button key={g.id} type="button"
+                              onClick={() => {
+                                const ids = (examForm.group_ids || []).includes(g.id)
+                                  ? examForm.group_ids.filter(id => id !== g.id)
+                                  : [...(examForm.group_ids || []), g.id]
+                                updExam('group_ids', ids)
+                              }}
+                              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+                                (examForm.group_ids || []).includes(g.id)
+                                  ? 'border-transparent text-white'
+                                  : 'border-slate-300 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                              }`}
+                              style={(examForm.group_ids || []).includes(g.id) ? { backgroundColor: g.color } : {}}>
+                              <span className="h-1.5 w-1.5 rounded-full"
+                                style={{ backgroundColor: (examForm.group_ids || []).includes(g.id) ? 'rgba(255,255,255,0.6)' : g.color }} />
+                              {g.name} ({g.member_count})
+                            </button>
+                          ))}
+                        </div>
+                    }
+                    {(examForm.group_ids || []).length === 0 && (
+                      <p className="mt-1 text-xs text-rose-500">Select at least one group.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { key: 'is_public', label: 'Public exam' },
@@ -512,3 +580,4 @@ export default function GenerateQuestionsModal({ isAdmin, onClose, onCreated }) 
     </div>
   )
 }
+

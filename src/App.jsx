@@ -23,11 +23,13 @@ import ReviewsPage from './pages/reviews/ReviewsPage'
 import CalendarPage from './pages/calendar/CalendarPage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import UserManagementPage from './pages/admin/UserManagementPage'
+import StudentAnalyticsPage from './pages/admin/StudentAnalyticsPage'
 import ContentModerationPage from './pages/admin/ContentModerationPage'
 import ExamManagementPage from './pages/admin/ExamManagementPage'
 import ImportExportPage from './pages/admin/ImportExportPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminApprovalPage from './pages/admin/AdminApprovalPage'
+import GroupManagementPage from './pages/admin/GroupManagementPage'
 import TutorPage from './pages/ai/TutorPage'
 import { useAuth } from './context/AuthContext'
 import Loader from './components/common/Loader'
@@ -79,11 +81,13 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
+          <Route path="/admin/users/:id/analytics" element={<StudentAnalyticsPage />} />
           <Route path="/admin/moderation" element={<ContentModerationPage />} />
           <Route path="/admin/exams" element={<ExamManagementPage />} />
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/approvals" element={<AdminApprovalPage />} />
           <Route path="/admin/import-export" element={<ImportExportPage />} />
+          <Route path="/admin/groups" element={<GroupManagementPage />} />
         </Route>
       </Route>
 

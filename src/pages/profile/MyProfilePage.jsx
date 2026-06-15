@@ -171,7 +171,7 @@ export default function MyProfilePage() {
     const title = theme.badgeTitle;
 
     return (
-      <svg className="hex-svg h-[170px] w-[150px] transition-transform duration-300 group-hover:-translate-y-2" viewBox="0 0 130 150" xmlns="http://www.w3.org/2000/svg">
+      <svg className="hex-svg h-[110px] w-[97px] transition-transform duration-300 group-hover:-translate-y-1" viewBox="0 0 130 150" xmlns="http://www.w3.org/2000/svg">
         <polygon points="65,4 124,37 124,113 65,146 6,113 6,37" fill={theme.hex.shadow} opacity="0.6" />
         <polygon points="65,8 120,39 120,111 65,142 10,111 10,39" fill={theme.hex.main} />
         <polygon points="65,44 112,69 112,101 65,126 18,101 18,69" fill={theme.hex.band} />
@@ -537,54 +537,56 @@ export default function MyProfilePage() {
         </form>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Stats</h2>
-          <div className="mt-4 space-y-3 text-sm text-slate-700">
-            <div>Global Rank: {profile.stats.global_rank ?? "N/A"}</div>
-            <div>Exams Attended: {profile.stats.exams_attended}</div>
-            <div>Exams Created: {profile.stats.exams_created}</div>
-            <div>Questions Created: {profile.stats.questions_created}</div>
-            <div>Accuracy: {profile.stats.accuracy?.toFixed(1)}%</div>
+      {/* ── Achievements — full width ── */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Achievements</h2>
+        <div className="mt-5">
+          {badges.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {badges.map((badge) => {
+                const theme = getBadgeTheme(badge);
+                return (
+                  <button
+                    key={badge.id}
+                    type="button"
+                    onClick={() => setSelectedBadge(badge)}
+                    className="group flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:bg-indigo-50/50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-700 dark:hover:bg-indigo-900/20"
+                  >
+                    {renderBadgeSvg(badge)}
+                    <div className="w-full text-center">
+                      <div className={`text-xs font-semibold leading-tight ${theme.titleColor}`}>{badge.name}</div>
+                      <div className={`mt-0.5 text-[10px] uppercase tracking-wider ${theme.descColor}`}>{theme.badgeTitle}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400">No badges earned yet. Take exams and engage with the app to unlock achievements.</p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Stats + Learning profile ── */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Stats</h2>
+          <div className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Global Rank</span><span className="font-semibold">{profile.stats.global_rank ?? "N/A"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Exams Attended</span><span className="font-semibold">{profile.stats.exams_attended}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Exams Created</span><span className="font-semibold">{profile.stats.exams_created}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Questions Created</span><span className="font-semibold">{profile.stats.questions_created}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Accuracy</span><span className="font-semibold">{profile.stats.accuracy?.toFixed(1)}%</span></div>
           </div>
         </div>
 
-        <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm min-h-[36rem]">
-          <h2 className="text-lg font-semibold">Achievements</h2>
-          <div className="mt-4 space-y-3 text-sm text-slate-700">
-            {badges.length > 0 ? (
-              <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 justify-items-center">
-                {badges.map((badge) => {
-                  const theme = getBadgeTheme(badge);
-                  return (
-                    <button
-                      key={badge.id}
-                      type="button"
-                      onClick={() => setSelectedBadge(badge)}
-                      className="group inline-flex min-h-[310px] w-full max-w-[260px] flex-col items-center gap-4 rounded-[2rem] border border-slate-200 bg-slate-950/5 p-6 text-center transition duration-300 hover:-translate-y-1 hover:bg-slate-950/10 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                    >
-                      {renderBadgeSvg(badge)}
-                      <div className="badge-info max-w-[180px] text-center">
-                        <div className={`text-sm font-semibold ${theme.titleColor}`}>{badge.name}</div>
-                        <div className={`mt-1 text-[11px] uppercase tracking-[0.24em] ${theme.descColor}`}>{theme.badgeTitle}</div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-sm text-slate-500">No badges earned yet. Take exams and engage with the app to unlock achievements.</div>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-          <h2 className="text-lg font-semibold">Learning profile</h2>
-          <p className="mt-3 text-sm text-slate-700">{profile.learning_goals || "No learning goals added yet."}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Learning profile</h2>
+          <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">{profile.learning_goals || "No learning goals added yet."}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {(profile.preferred_topics || []).length ? profile.preferred_topics.map((topic) => (
-              <span key={topic} className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">#{topic}</span>
-            )) : <span className="text-sm text-slate-500">No preferred topics yet.</span>}
+              <span key={topic} className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">#{topic}</span>
+            )) : <span className="text-sm text-slate-500 dark:text-slate-400">No preferred topics yet.</span>}
           </div>
         </div>
       </div>

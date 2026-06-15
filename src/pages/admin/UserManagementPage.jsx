@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api, { getApiErrorMessage } from "../../services/api";
 
 export default function UserManagementPage() {
@@ -46,13 +47,21 @@ export default function UserManagementPage() {
                 <div className="text-sm text-gray-600">{user.email}</div>
                 <div className="mt-1 text-xs text-gray-500">Role: {user.role}</div>
               </div>
-              <button
-                type="button"
-                onClick={() => removeUser(user.id)}
-                className="mt-4 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 sm:mt-0"
-              >
-                Delete
-              </button>
+              <div className="mt-4 flex flex-wrap gap-2 sm:mt-0">
+                <Link
+                  to={`/admin/users/${user.id}/analytics`}
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Analytics
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => removeUser(user.id)}
+                  className="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
